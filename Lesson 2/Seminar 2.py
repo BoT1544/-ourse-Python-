@@ -107,9 +107,9 @@
 
 
 # Альтернативное решение.
-int(input("Введите число арбузов : "))
-temp = []
-for i in range(n):
-    t = int(input('Введите массу арбуза: '))
-    temp.append(t)
-print(min(temp), max(temp))
+# int(input("Введите число арбузов : "))
+# temp = []
+# for i in range(n):
+#     t = int(input('Введите массу арбуза: '))
+#     temp.append(t)
+# print(min(temp), max(temp))
