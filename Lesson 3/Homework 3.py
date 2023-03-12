@@ -77,12 +77,12 @@ K – 5 очков; J, X – 8 очков; Q, Z – 10 очков.
 """
 
 
-# list_0 = {1 : 'AEIOULNSTRАВЕИНОРСТ', 2 : 'DGДКЛМПУ', 3 : 'BCMPБГЁЬЯ', 4 : 'FHVWYЙЫ', 5 : 'KЖЗХЦЧ', 8 : 'JXШЭЮ', 10 : 'QZФЩЪ'}
-# a = input('Input one word: ').upper()
-# count = 0
-# for i in a:
-#   for j in list_0:
-#     if i in list_0[j]:
-#       count += j
-# print(count)
+list_0 = {1 : 'AEIOULNSTRАВЕИНОРСТ', 2 : 'DGДКЛМПУ', 3 : 'BCMPБГЁЬЯ', 4 : 'FHVWYЙЫ', 5 : 'KЖЗХЦЧ', 8 : 'JXШЭЮ', 10 : 'QZФЩЪ'}
+a = input('Input one word: ').upper()
+count = 0
+for i in a:
+  for j in list_0:
+    if i in list_0[j]:
+      count += j
+print(count)
 
