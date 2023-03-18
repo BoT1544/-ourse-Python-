@@ -7,8 +7,10 @@ import config
 async def mes_start(message: Message):
     await message.answer(text=f'{message.from_user.first_name}, привет !\n'
                         f'Сегодня мы с тобой поиграем в интересную игру\n'
-                        'Для начала игры введи команду и через пробел укажи количество конфет\n'
-                        'Пример ввода "/new 100"')
+                        'Для начала выбери сложность бота:\n'
+                        'Что бы выбрать нажми на кнопки'
+                        'Нормальная сложность "/normal"\n'
+                        'Высокая сложность "/hard"')
 
 
 @dp.message_handler(commands=['new'])
@@ -35,34 +37,29 @@ async def mes_new_game(message: Message,):
         else:
             await message.reply(f'Вы ввели {message.text}, а нужно правильно команду "/new"\n'
                                 'После ввести количество конфет через пробел\n'
-                                'Пример ввода: "/new 100')            
+                                'Пример ввода: "/new 100"')            
     else:
         await message.reply(f'Вы ввели {message.text}, нужно были разделить команду и цифры пробелом\n'
-                                'Пример ввода: "/new 100')
+                                'Пример ввода: "/new 100"')
             
 
+@dp.message_handler(commands=['normal'])
+async def normal(message: Message,):
+    config.dif = 0
+    await message.answer(f'Вы выбрали нормальную сложность\n')
+    await message.answer(f'Давай теперь  установим количество конфет\n'
+                        'Для этого введи команду и через пробел укажи количество конфет\n'
+                        'Пример ввода "/new 100"\n')
+
+@dp.message_handler(commands=['hard'])
+async def hard(message: Message,):
+    config.dif = 1
+    await message.answer(f'Вы выбрали высокую сложность\n')
+    await message.answer(f'Давай теперь  установим количество конфет\n'
+                        'Для этого введи команду и через пробел укажи количество конфет\n'
+                        'Пример ввода "/new 100"\n')
 
 
-"""рабочая версия"""
-# @dp.message_handler(commands=['new'])
-# async def mes_new_game(message: Message):
-#     name = message.from_user.first_name
-#     for game in config.games:
-#         if message.from_user.id == game:
-#             await message.answer(f'{name} ты уже есть в игре, иди играй')
-#             break
-#     else:
-#         config.total = 150
-#         await message.answer(text=f'И так, на столе {config.total} конфет. Кидаем жребий кто берёт первым')
-#         config.games[message.from_user.id] = 150
-#         coin = random.randint(0, 1)
-#         if coin:
-#             await message.answer(text=f'{message.from_user.first_name}, поздравляю выпал орёл. Ты ходишь первым'
-#                                     f'бери от 1 до 28 конфет')
-#         else:
-#             await message.answer(text=f'{message.from_user.first_name}, не растраивайся первый ход делает бот')
-#             await bot_turn(message)
-""""""
 
 @dp.message_handler()
 async def all_catch(message: Message):
@@ -91,15 +88,19 @@ async def player_turn(message: Message):
     await bot_turn(message)
 
 
-"""рабочая версия !"""
 async def bot_turn(message: Message):
-        take_amount = 0
         current_total = config.games.get(message.from_user.id)
-        if current_total <= 28:
-            take_amount = current_total
+        if config.dif == 1:
+            take_amount = 0
+            if current_total <= 28:
+                take_amount = current_total
+            else:
+                take_amount = current_total % 29 if current_total % 29 != 0 else 1
         else:
-            take_amount = current_total % 29 if current_total % 29 != 0 else 1
-        ##take_amount = random.randint(1, 28)
+            if current_total <= 28:
+                take_amount = current_total
+            else:
+                take_amount = random.randint(1, 28)
         config.games[message.from_user.id] = config.games.get(message.from_user.id) - take_amount
         name = message.from_user.first_name
         await message.answer(text=f'бот взял {take_amount} конфет и на столе осталось'
@@ -108,34 +109,17 @@ async def bot_turn(message: Message):
             return
         await message.answer(text=f'{name} теперь твоё черёд ! Бери конфеты') 
 
-""""""
-
-# async def bot_turn(message: Message):
-#     await message.answer('Давайте выберем сложность !\n'
-#                          'Введите цифру 0 если хотите нормальную сложность\n'
-#                          'Введите цифру 1 если хотите высокую сложность')
-#     if message.text == '1':
-#         take_amount = 0
-#         current_total = config.games.get(message.from_user.id)
-#         if current_total <= 28:
-#             take_amount = current_total
-#         else:
-#             take_amount = current_total % 29 if current_total % 29 != 0 else 1
-#     else:
-#         take_amount = random.randint(1, 28)
-#     config.games[message.from_user.id] = config.games.get(message.from_user.id) - take_amount
-#     name = message.from_user.first_name
-#     await message.answer(text=f'бот взял {take_amount} конфет и на столе осталось'
-#                          f'{config.games.get(message.from_user.id)}\n')
-#     if await check_victory(message, 'бот'):
-#         return
-#     await message.answer(text=f'{name} теперь твоё черёд ! Бери конфеты')
-
-
 
 async def check_victory(message: Message, name: str):
     if config.games.get(message.from_user.id) <= 0:
         await message.answer(text=f'Победил {name} ! "Это была славная игра ! )')
+        await message.answer('Можно начинать новую игру\n'
+                            'Для этого введи команду и через пробел укажи количество конфет\n'
+                            'Пример ввода "/new 100"\n'
+                            'Так же можно изменить сложность бота, если не менять она останеть прежней\n'
+                            'Что бы выбрать нажми на кнопки'
+                            'Нормальная сложность "/normal"\n'
+                            'Высокая сложность "/hard"')
         config.games.pop(message.from_user.id)
         return True
     else:
